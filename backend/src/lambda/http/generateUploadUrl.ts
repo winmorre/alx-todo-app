@@ -6,6 +6,8 @@ import { cors } from 'middy/middlewares'
 
 import { createAttachmentPresignedUrl } from '../../helpers/todos'
 import { createLogger } from '../../utils/logger'
+import { partialUpdateAttachementUrl } from '../../businessLogic/todos'
+import { getUserId } from '../utils'
 
 const logger = createLogger('uploads')
 
@@ -13,8 +15,11 @@ export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
       const todoId = event.pathParameters.todoId
+      const userId = getUserId(event)
 
       let result = await createAttachmentPresignedUrl(`${todoId}`)
+
+      await partialUpdateAttachementUrl(todoId,userId)
 
       return {
         statusCode: 200,

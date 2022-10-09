@@ -35,6 +35,7 @@ export class EditTodo extends React.PureComponent<
   handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (!files) return
+  console.log(files[0].name)
 
     this.setState({
       file: files[0]
@@ -43,6 +44,7 @@ export class EditTodo extends React.PureComponent<
 
   handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
+    console.log(`file name in submit  ${this.state.file.name}`)
 
     try {
       if (!this.state.file) {
@@ -59,6 +61,7 @@ export class EditTodo extends React.PureComponent<
       alert('File was uploaded!')
     } catch (e) {
       alert('Could not upload a file: ' + (e as Error).message)
+      console.log(e)
     } finally {
       this.setUploadState(UploadState.NoUpload)
     }
