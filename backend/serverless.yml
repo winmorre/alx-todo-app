@@ -49,11 +49,9 @@ custom:
        title: Todo API
        description: Serverless application for Todo creation
    models:
-     - name: CreateTodoRequest
-       contentType: application/json
+     - contentType: application/json
        schema: ${file(models/create-todo-model.json)}
-     - name: UpdateTodoRequest
-       contentType: application/json
+     - contentType: application/json
        schema: ${file(models/update-todo-model.json)}
 
 
@@ -148,15 +146,17 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
-          cors: true
           authorizer: Auth
+          cors: true
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - s3:GetObject
           - s3:PutObject
-        Resource: "arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*"
+          - s3:PutObjectAcl
+          - s3:GetObject
+        Resource:
+          - "arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*"
 
 resources:
   Resources:
@@ -214,6 +214,7 @@ resources:
       DeletionPolicy: Delete
       Properties:
         BucketName: ${self:provider.environment.ATTACHMENT_S3_BUCKET}
+        AccessControl: PublicReadWrite
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
@@ -228,17 +229,19 @@ resources:
                 - HEAD
               MaxAge: 3000
 
-    # For cross-referencing the name of the bucket, use "!Ref AttachmentsBucket"
+#     For cross-referencing the name of the bucket, use "!Ref AttachmentsBucket"
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
         PolicyDocument:
-          Id: MyPolicy
+          Id: "MyPolicy"
           Version: "2012-10-17"
           Statement:
-            - Sid: PublicReadForGetBucketObjects
+            - Sid: "PublicReadForGetBucketObjects"
               Effect: Allow
               Principal: "*"
-              Action: 's3:GetObject'
-              Resource: "arn:aws:s3:::${self.provider.environment.ATTACHMENT_S3_BUCKET}/*"
+              Action:
+                - s3:GetObject
+              Resource:
+                - "arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*"
         Bucket: !Ref AttachmentsBucket
