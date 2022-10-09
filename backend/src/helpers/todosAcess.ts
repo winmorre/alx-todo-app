@@ -45,16 +45,15 @@ export class TodosAccess {
       {
         TableName: this.todosTable,
         Key: {
-          todoId: todoId
+          todoId: todoId,
+          userId:userId
         },
         UpdateExpression: `set name = :name,done=:done,dueDate=:dueDate`,
         ExpressionAttributeValues: {
           ':name': payload.name,
           ':done': payload.done,
-          ':dueDate': payload.dueDate,
-          ':userId': userId
-        },
-        ConditionExpression: `userId = :userId`
+          ':dueDate': payload.dueDate
+        }
       }
     ).promise()
 
