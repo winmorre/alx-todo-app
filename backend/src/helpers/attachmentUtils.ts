@@ -4,8 +4,6 @@ import { S3 } from 'aws-sdk'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
-// TODO: Implement the fileStogare logic
-
 export class AttachmentUtils {
   constructor(private readonly s3: S3 = createS3Client(),
               private readonly bucketName = process.env.ATTACHMENT_S3_BUCKET,
@@ -13,16 +11,14 @@ export class AttachmentUtils {
   }
 
   async createAttachmentPresignedUrl(todoId: string) {
-    return this.s3.getSignedUrl('PutObject', {
+    return this.s3.getSignedUrl('putObject', {
       Bucket: this.bucketName,
       Key: todoId,
-      Expires: this.urlExpiration
+      Expires: parseInt(this.urlExpiration)
     })
   }
 }
 
 function createS3Client() {
-  return new XAWS.S3({
-    signatureVersion: 'v4'
-  })
+  return new XAWS.S3({signatureVersion: 'v4'})
 }
