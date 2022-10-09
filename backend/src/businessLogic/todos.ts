@@ -93,9 +93,8 @@ export const partialUpdateAttachementUrl = async (todoId: string, userId: string
           todoId: todoId,
           userId: userId
         },
-        UpdateExpression: `set attachmentUrl = :attachmentUrl`,
+        UpdateExpression: `set attachmentUrl=:attachmentUrl`,
         ExpressionAttributeValues: {
-          ':userId': userId,
           ':attachmentUrl': `http://${bucketName}.s3.amazonaws.com/${todoId}`
         }
       }
